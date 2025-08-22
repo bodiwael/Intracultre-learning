@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intercultural Flashcards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 900px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        .flashcard-container {
+            perspective: 1000px;
+            margin: 40px auto;
+            width: 400px;
+            height: 500px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            overflow-y: auto;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(145deg, #f8f9ff, #e6e8ff);
+            padding: 20px;
+            justify-content: flex-start;
+        }
+
+        .language-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .lang-en { background: linear-gradient(45deg, #ff6b6b, #ff8e8e); color: white; }
+        .lang-fr { background: linear-gradient(45deg, #4ecdc4, #7fdbdb); color: white; }
+        .lang-ar { background: linear-gradient(45deg, #feca57, #ffd93d); color: #333; }
+
+        .word {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .arabic { font-size: 3.5rem; direction: rtl; }
+
+        .gesture-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .gesture {
+            font-size: 5rem;
+            margin: 20px 0;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+        }
+
+        .gesture-description {
+            font-size: 1.1rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+
+        .sound-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+            margin: 20px 10px;
+        }
+
+        .sound-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .sound-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 10px rgba(79, 172, 254, 0.2);
+        }
+
+        .flip-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #999;
+            font-size: 0.9rem;
+            animation: pulse 2s infinite;
+        }
+
+        .stats {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Back side specific styles */
+        .translations {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .translation-item {
+            background: rgba(255,255,255,0.8);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .translation-item .word {
+            font-size: 1.8rem;
+            margin: 10px 0;
+        }
+
+        .translation-item .gesture {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            animation: none;
+        }
+
+        .translation-item .gesture-description {
+            font-size: 0.9rem;
+            margin: 8px 0;
+        }
+
+        .translation-item .language-indicator {
+            position: relative;
+            top: 0;
+            right: 0;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .translation-item .sound-btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            margin: 8px 5px;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .card-enter {
+            animation: cardEnter 0.6s ease-out;
+        }
+
+        @keyframes cardEnter {
+            from { 
+                opacity: 0; 
+                transform: scale(0.8) translateY(50px);
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .flashcard-container {
+                width: 350px;
+                height: 450px;
+            }
+            
+            .word { font-size: 2.5rem; }
+            .gesture { font-size: 4rem; }
+            .header h1 { font-size: 2rem; }
+            
+            .translation-item .word { font-size: 1.5rem; }
+            .translation-item .gesture { font-size: 2rem; }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            animation: confetti-fall 3s linear;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>🌍 Intercultural Flashcards</h1>
+            <p>Learn greetings across French, English & Arabic cultures</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="stats">
+            <span id="cardCounter">Card 1 of 9</span>
+        </div>
+
+        <div class="flashcard-container">
+            <div class="flashcard" id="flashcard">
+                <div class="card-face card-front">
+                    <div class="language-indicator" id="langIndicator">EN</div>
+                    <div class="word" id="frontWord">Hello</div>
+                    <div class="gesture-container">
+                        <div class="gesture" id="frontGesture">👋</div>
+                        <div class="gesture-description" id="frontGestureDesc">Wave your hand side to side</div>
+                    </div>
+                    <button class="sound-btn" onclick="playSound('front', event)">🔊 Play Sound</button>
+                    <div class="flip-indicator">👆 Tap to see other languages</div>
+                </div>
+                
+                <div class="card-face card-back">
+                    <div class="translations" id="translations"></div>
+                    <div class="flip-indicator">👆 Tap to go back</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" onclick="previousCard()" id="prevBtn">⬅️ Previous</button>
+            <button class="nav-btn" onclick="nextCard()" id="nextBtn">Next ➡️</button>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        const flashcardsData = [
+            {
+                en: { word: "Hello", gesture: "👋", description: "Wave your hand side to side", sound: "hello" },
+                fr: { word: "Bonjour", gesture: "🤝", description: "Handshake or air kisses on cheeks", sound: "bonjour" },
+                ar: { word: "مرحبا", gesture: "🤲", description: "Place right hand over heart", sound: "marhaban" }
+            },
+            {
+                en: { word: "Thank you", gesture: "🙏", description: "Press palms together", sound: "thank you" },
+                fr: { word: "Merci", gesture: "😊", description: "Smile and slight nod", sound: "merci" },
+                ar: { word: "شكرا", gesture: "🤲", description: "Both hands to chest", sound: "shukran" }
+            },
+            {
+                en: { word: "Goodbye", gesture: "👋", description: "Wave hand up and down", sound: "goodbye" },
+                fr: { word: "Au revoir", gesture: "💋", description: "Air kiss or wave", sound: "au revoir" },
+                ar: { word: "وداعا", gesture: "✋", description: "Raise right hand", sound: "wadaan" }
+            },
+            {
+                en: { word: "Please", gesture: "🙏", description: "Palms together, slight bow", sound: "please" },
+                fr: { word: "S'il vous plaît", gesture: "🤏", description: "Gentle hand gesture", sound: "s'il vous plait" },
+                ar: { word: "من فضلك", gesture: "🤲", description: "Open palms upward", sound: "min fadlik" }
+            },
+            {
+                en: { word: "Excuse me", gesture: "✋", description: "Raised open palm", sound: "excuse me" },
+                fr: { word: "Excusez-moi", gesture: "👐", description: "Both hands slightly raised", sound: "excusez-moi" },
+                ar: { word: "المعذرة", gesture: "🤚", description: "Hand on chest", sound: "al maadira" }
+            },
+            {
+                en: { word: "Yes", gesture: "👍", description: "Thumbs up", sound: "yes" },
+                fr: { word: "Oui", gesture: "👌", description: "OK sign with fingers", sound: "oui" },
+                ar: { word: "نعم", gesture: "✊", description: "Closed fist nod", sound: "naam" }
+            },
+            {
+                en: { word: "No", gesture: "👎", description: "Thumbs down", sound: "no" },
+                fr: { word: "Non", gesture: "🚫", description: "Index finger wag", sound: "non" },
+                ar: { word: "لا", gesture: "✋", description: "Palm facing outward", sound: "la" }
+            },
+            {
+                en: { word: "Welcome", gesture: "🤗", description: "Open arms gesture", sound: "welcome" },
+                fr: { word: "Bienvenue", gesture: "🫱", description: "Extended hand", sound: "bienvenue" },
+                ar: { word: "أهلا وسهلا", gesture: "🤲", description: "Both hands welcoming", sound: "ahlan wa sahlan" }
+            },
+            {
+                en: { word: "Beautiful", gesture: "😍", description: "Kiss fingers and gesture outward", sound: "beautiful" },
+                fr: { word: "Magnifique", gesture: "💋", description: "Chef's kiss", sound: "magnifique" },
+                ar: { word: "جميل", gesture: "👌", description: "Finger to lips then outward", sound: "jameel" }
+            }
+        ];
+
+        let currentCardIndex = 0;
+        let isFlipped = false;
+
+        const flashcard = document.getElementById('flashcard');
+        const frontWord = document.getElementById('frontWord');
+        const frontGesture = document.getElementById('frontGesture');
+        const frontGestureDesc = document.getElementById('frontGestureDesc');
+        const langIndicator = document.getElementById('langIndicator');
+        const translations = document.getElementById('translations');
+        const cardCounter = document.getElementById('cardCounter');
+        const progressFill = document.getElementById('progressFill');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function updateCard() {
+            const card = flashcardsData[currentCardIndex];
+            const currentLang = getCurrentLanguage();
+            const langData = card[currentLang];
+            
+            // Add entrance animation
+            flashcard.classList.add('card-enter');
+            setTimeout(() => flashcard.classList.remove('card-enter'), 600);
+            
+            frontWord.textContent = langData.word;
+            frontWord.className = currentLang === 'ar' ? 'word arabic' : 'word';
+            frontGesture.textContent = langData.gesture;
+            frontGestureDesc.textContent = langData.description;
+            
+            // Update language indicator
+            const langMap = { en: 'EN', fr: 'FR', ar: 'AR' };
+            langIndicator.textContent = langMap[currentLang];
+            langIndicator.className = `language-indicator lang-${currentLang}`;
+            
+            // Update back side with other languages
+            updateTranslations();
+            
+            // Update progress and counter
+            cardCounter.textContent = `Card ${currentCardIndex + 1} of ${flashcardsData.length}`;
+            progressFill.style.width = `${((currentCardIndex + 1) / flashcardsData.length) * 100}%`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentCardIndex === 0;
+            nextBtn.disabled = currentCardIndex === flashcardsData.length - 1;
+            
+            // Reset flip state
+            if (isFlipped) {
+                toggleFlip();
+            }
+        }
+
+        function getCurrentLanguage() {
+            const languages = ['en', 'fr', 'ar'];
+            return languages[currentCardIndex % 3];
+        }
+
+        function updateTranslations() {
+            const card = flashcardsData[currentCardIndex];
+            const currentLang = getCurrentLanguage();
+            const otherLangs = Object.keys(card).filter(lang => lang !== currentLang);
+            
+            translations.innerHTML = otherLangs.map(lang => {
+                const data = card[lang];
+                const langNames = { en: 'English', fr: 'Français', ar: 'العربية' };
+                const wordClass = lang === 'ar' ? 'word arabic' : 'word';
+                
+                return `
+                    <div class="translation-item">
+                        <div class="language-indicator lang-${lang}">
+                            ${langNames[lang]}
+                        </div>
+                        <div class="${wordClass}">${data.word}</div>
+                        <div class="gesture">${data.gesture}</div>
+                        <div class="gesture-description">${data.description}</div>
+                        <button class="sound-btn" onclick="playSound('${lang}', event)">
+                            🔊 Play ${langNames[lang]}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleFlip() {
+            isFlipped = !isFlipped;
+            flashcard.classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            if (currentCardIndex < flashcardsData.length - 1) {
+                currentCardIndex++;
+                updateCard();
+                
+                // Celebration on last card
+                if (currentCardIndex === flashcardsData.length - 1) {
+                    celebrate();
+                }
+            }
+        }
+
+        function previousCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateCard();
+            }
+        }
+
+        function playSound(lang, event) {
+            // Prevent the click event from bubbling up to the card flip
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            const card = flashcardsData[currentCardIndex];
+            let textToSpeak;
+            let voiceLang;
+            
+            if (lang === 'front') {
+                const currentLang = getCurrentLanguage();
+                textToSpeak = card[currentLang].word;
+                voiceLang = currentLang === 'en' ? 'en-US' : currentLang === 'fr' ? 'fr-FR' : 'ar-SA';
+            } else {
+                textToSpeak = card[lang].word;
+                voiceLang = lang === 'en' ? 'en-US' : lang === 'fr' ? 'fr-FR' : 'ar-SA';
+            }
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                utterance.lang = voiceLang;
+                utterance.rate = 0.8;
+                utterance.pitch = 1.1;
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('Sorry, your browser does not support text-to-speech.');
+            }
+        }
+
+        function celebrate() {
+            const celebration = document.getElementById('celebration');
+            const colors = ['#ff6b6b', '#4ecdc4', '#feca57', '#667eea', '#764ba2'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = '10px';
+                    confetti.style.height = '10px';
+                    confetti.style.borderRadius = '50%';
+                    celebration.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        // Event listeners
+        flashcard.addEventListener('click', (event) => {
+            // Only flip if the click is not on a button
+            if (!event.target.classList.contains('sound-btn')) {
+                toggleFlip();
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    previousCard();
+                    break;
+                case 'ArrowRight':
+                    nextCard();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    toggleFlip();
+                    break;
+            }
+        });
+
+        // Initialize
+        updateCard();
+
+        // Touch gestures for mobile
+        let startX = 0;
+        let startY = 0;
+        
+        flashcard.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        flashcard.addEventListener('touchend', (e) => {
+            // Don't handle swipe if touching a button
+            if (e.target.classList.contains('sound-btn')) {
+                return;
+            }
+            
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+            
+            // Only handle horizontal swipes (ignore vertical scrolling)
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0 && currentCardIndex < flashcardsData.length - 1) {
+                    nextCard();
+                } else if (diffX < 0 && currentCardIndex > 0) {
+                    previousCard();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

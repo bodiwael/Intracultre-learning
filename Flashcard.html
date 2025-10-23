@@ -1,646 +1,1469 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intercultural Flashcards</title>
+    <title>Complete French Textbook Flashcards - 32 Cards</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        .arabic-text {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .hindi-text,
+        .urdu-text {
+            line-height: 1.6;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow-x: hidden;
+            font-family: 'Arial', 'Helvetica', 'Noto Sans', 'DejaVu Sans', sans-serif;
         }
 
-        .app-container {
-            max-width: 900px;
-            width: 100%;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: fadeInDown 1s ease-out;
-        }
-
-        .header h1 {
-            color: white;
-            font-size: 2.5rem;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: rgba(255,255,255,0.9);
-            font-size: 1.1rem;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4facfe, #00f2fe);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
-        }
-
-        .flashcard-container {
-            perspective: 1000px;
-            margin: 40px auto;
-            width: 400px;
-            height: 500px;
-        }
-
-        .flashcard {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-        }
-
-        .flashcard.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            background: linear-gradient(145deg, #ffffff, #f0f0f0);
-            overflow-y: auto;
-        }
-
-        .card-back {
-            transform: rotateY(180deg);
-            background: linear-gradient(145deg, #f8f9ff, #e6e8ff);
-            padding: 20px;
-            justify-content: flex-start;
-        }
-
-        .language-indicator {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .lang-en { background: linear-gradient(45deg, #ff6b6b, #ff8e8e); color: white; }
-        .lang-fr { background: linear-gradient(45deg, #4ecdc4, #7fdbdb); color: white; }
-        .lang-ar { background: linear-gradient(45deg, #feca57, #ffd93d); color: #333; }
-
-        .word {
-            font-size: 3rem;
-            font-weight: bold;
-            margin: 20px 0;
-            text-align: center;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .arabic { font-size: 3.5rem; direction: rtl; }
-
-        .gesture-container {
-            margin: 30px 0;
-            text-align: center;
-        }
-
-        .gesture {
-            font-size: 5rem;
-            margin: 20px 0;
+        .cultural-icon {
             animation: bounce 2s infinite;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
-        }
-
-        .gesture-description {
-            font-size: 1.1rem;
-            color: #666;
-            font-style: italic;
-            margin-top: 15px;
-            line-height: 1.4;
-        }
-
-        .sound-btn {
-            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-            border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
-            margin: 20px 10px;
-        }
-
-        .sound-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(255, 107, 107, 0.4);
-        }
-
-        .sound-btn:active {
-            transform: translateY(-1px);
-        }
-
-        .controls {
-            text-align: center;
-            margin-top: 40px;
-        }
-
-        .nav-btn {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            border: none;
-            padding: 15px 25px;
-            border-radius: 50px;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 0 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
-        }
-
-        .nav-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(79, 172, 254, 0.4);
-        }
-
-        .nav-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: 0 4px 10px rgba(79, 172, 254, 0.2);
-        }
-
-        .flip-indicator {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #999;
-            font-size: 0.9rem;
-            animation: pulse 2s infinite;
-        }
-
-        .stats {
-            text-align: center;
-            margin-top: 20px;
-            color: rgba(255,255,255,0.9);
-        }
-
-        /* Back side specific styles */
-        .translations {
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .translation-item {
-            background: rgba(255,255,255,0.8);
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .translation-item .word {
-            font-size: 1.8rem;
-            margin: 10px 0;
-        }
-
-        .translation-item .gesture {
-            font-size: 2.5rem;
-            margin: 10px 0;
-            animation: none;
-        }
-
-        .translation-item .gesture-description {
-            font-size: 0.9rem;
-            margin: 8px 0;
-        }
-
-        .translation-item .language-indicator {
-            position: relative;
-            top: 0;
-            right: 0;
-            margin-bottom: 10px;
             display: inline-block;
+            margin: 0 5px;
         }
 
-        .translation-item .sound-btn {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            margin: 8px 5px;
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
+        .cultural-icon:nth-child(even) {
+            animation-delay: 0.5s;
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-20px); }
-            60% { transform: translateY(-10px); }
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        .card-enter {
-            animation: cardEnter 0.6s ease-out;
-        }
-
-        @keyframes cardEnter {
-            from { 
-                opacity: 0; 
-                transform: scale(0.8) translateY(50px);
+            0% {
+                transform: scale(1);
             }
-            to { 
-                opacity: 1; 
-                transform: scale(1) translateY(0);
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
             }
         }
 
-        @media (max-width: 768px) {
-            .flashcard-container {
-                width: 350px;
-                height: 450px;
-            }
-            
-            .word { font-size: 2.5rem; }
-            .gesture { font-size: 4rem; }
-            .header h1 { font-size: 2rem; }
-            
-            .translation-item .word { font-size: 1.5rem; }
-            .translation-item .gesture { font-size: 2rem; }
+        .sound-button {
+            animation: pulse 2s infinite;
+            transition: all 0.3s ease;
         }
 
-        .celebration {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1000;
+        .sound-button:hover {
+            transform: scale(1.1);
         }
 
-        .confetti {
-            position: absolute;
-            animation: confetti-fall 3s linear;
+        .mastered-card {
+            opacity: 0.7;
+            background: linear-gradient(45deg, #10b981, #059669);
         }
 
-        @keyframes confetti-fall {
-            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        .progress-bar {
+            transition: width 0.5s ease;
         }
     </style>
 </head>
-<body>
-    <div class="app-container">
-        <div class="header">
-            <h1>🌍 Intercultural Flashcards</h1>
-            <p>Learn greetings across French, English & Arabic cultures</p>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50">
+
+    <div class="max-w-6xl mx-auto p-4">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <span class="text-purple-600 text-3xl">📚</span>
+                <h1
+                    class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Complete French Textbook Flashcards
+                </h1>
+                <span class="text-blue-600 text-3xl">🌍</span>
+            </div>
+            <p class="text-gray-600 text-lg">32 comprehensive cards covering all textbook vocabulary, grammar & skills
+            </p>
+            <div class="text-sm text-gray-500 mt-2">
+                Supporting learners from English • German • Indian • Pakistani • Egyptian • Italian cultures
+            </div>
         </div>
 
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
+        <!-- Language Selection -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-3 text-center">
+                Choose your native language / Choisissez votre langue maternelle:
+            </label>
+            <div class="flex flex-wrap justify-center gap-3" id="languageButtons">
+                <!-- Language buttons will be inserted here -->
+            </div>
         </div>
 
-        <div class="stats">
-            <span id="cardCounter">Card 1 of 9</span>
+        <!-- Category Selection -->
+        <div class="mb-6">
+            <div class="flex flex-wrap justify-center gap-2" id="categoryButtons">
+                <!-- Category buttons will be inserted here -->
+            </div>
         </div>
 
-        <div class="flashcard-container">
-            <div class="flashcard" id="flashcard">
-                <div class="card-face card-front">
-                    <div class="language-indicator" id="langIndicator">EN</div>
-                    <div class="word" id="frontWord">Hello</div>
-                    <div class="gesture-container">
-                        <div class="gesture" id="frontGesture">👋</div>
-                        <div class="gesture-description" id="frontGestureDesc">Wave your hand side to side</div>
+        <!-- Score and Progress -->
+        <div class="flex justify-between items-center mb-6 bg-white rounded-xl p-6 shadow-lg border">
+            <div class="flex items-center gap-3">
+                <span class="text-yellow-500 text-2xl">🏆</span>
+                <div>
+                    <div class="font-bold text-xl" id="scoreDisplay">Score: 0/32</div>
+                    <div class="text-sm text-gray-500">Cards mastered</div>
+                    <!-- Progress Bar -->
+                    <div class="w-32 bg-gray-200 rounded-full h-2 mt-2">
+                        <div class="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full progress-bar"
+                            id="progressBar" style="width: 0%"></div>
                     </div>
-                    <button class="sound-btn" onclick="playSound('front', event)">🔊 Play Sound</button>
-                    <div class="flip-indicator">👆 Tap to see other languages</div>
                 </div>
-                
-                <div class="card-face card-back">
-                    <div class="translations" id="translations"></div>
-                    <div class="flip-indicator">👆 Tap to go back</div>
+            </div>
+            <div class="text-center">
+                <div class="font-semibold text-lg" id="cardCounter">Card 1 of 32</div>
+                <div class="text-sm text-gray-500" id="categoryDisplay">in Tous</div>
+            </div>
+            <button onclick="resetProgress()"
+                class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors">
+                <span>🔄</span>
+                Reset
+            </button>
+        </div>
+
+        <!-- Flashcard -->
+        <div class="flex justify-center mb-8 px-4">
+            <div class="flip-card w-full max-w-2xl h-96 cursor-pointer" id="flashcard" onclick="flipCard()">
+                <div class="flip-card-inner">
+                    <!-- Front -->
+                    <div class="flip-card-front bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                        <div class="text-sm font-medium mb-4 bg-white bg-opacity-20 px-4 py-2 rounded-full"
+                            id="categoryTag">
+                            Environnement
+                        </div>
+                        <div class="flex items-center justify-center gap-3 mb-4">
+                            <button onclick="playSound(event)"
+                                class="sound-button bg-white bg-opacity-20 hover:bg-opacity-30 p-3 rounded-full transition-all">
+                                <span class="text-2xl">🔊</span>
+                            </button>
+                        </div>
+                        <div class="text-3xl md:text-4xl font-bold text-center mb-6 px-4 break-words" id="frenchText">
+                            la pollution atmosphérique
+                        </div>
+                        <div class="text-sm text-center opacity-80 mb-4" id="languageIndicator">
+                            🇫🇷 Français → 🇺🇸 English
+                        </div>
+                        <div class="text-xs text-center opacity-60 px-4">
+                            Click to reveal translation & cultural context
+                        </div>
+                    </div>
+
+                    <!-- Back -->
+                    <div class="flip-card-back bg-gradient-to-br from-green-500 to-teal-600 text-white">
+                        <div class="text-center mb-4">
+                            <div class="text-2xl md:text-3xl font-bold mb-3 px-4 break-words" id="translationText">
+                                atmospheric pollution
+                            </div>
+                            <div class="text-sm opacity-80" id="translationFlag">
+                                🇺🇸 Translation
+                            </div>
+                        </div>
+
+                        <!-- Cultural Icons -->
+                        <div class="mb-4 text-center" id="culturalIcons">
+                            <!-- Cultural icons will be inserted here -->
+                        </div>
+
+                        <div class="bg-white bg-opacity-15 rounded-lg p-4 text-sm mx-2 overflow-auto">
+                            <div class="font-medium mb-2 flex items-center gap-2 flex-wrap">
+                                <span>🌍</span>
+                                <span>Cultural Context:</span>
+                            </div>
+                            <div class="italic leading-relaxed break-words" id="culturalContext">
+                                Environmental awareness is growing in English-speaking countries
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="controls">
-            <button class="nav-btn" onclick="previousCard()" id="prevBtn">⬅️ Previous</button>
-            <button class="nav-btn" onclick="nextCard()" id="nextBtn">Next ➡️</button>
+        <!-- Controls -->
+        <div class="flex justify-center items-center gap-6 mb-8">
+            <button onclick="prevCard()"
+                class="flex items-center gap-2 bg-white hover:bg-gray-50 px-6 py-3 rounded-xl transition-colors shadow-lg border">
+                <span>←</span>
+                Previous
+            </button>
+
+            <button onclick="markAsKnown()" id="knowButton"
+                class="px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-xl"
+                style="display: none;">
+                I Know This!
+            </button>
+
+            <button onclick="nextCard()"
+                class="flex items-center gap-2 bg-white hover:bg-gray-50 px-6 py-3 rounded-xl transition-colors shadow-lg border">
+                Next
+                <span>→</span>
+            </button>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-white rounded-xl p-8 shadow-lg border">
+            <h3 class="font-bold text-xl text-gray-800 mb-4 flex items-center gap-2">
+                <span class="text-blue-600 text-2xl">📚</span>
+                How to Use This Enhanced Learning Tool:
+            </h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-2">New Features:</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li>• 🔊 Click the sound button to hear French pronunciation</li>
+                        <li>• 🎭 Animated cultural icons show different cultural perspectives</li>
+                        <li>• 📊 Visual progress bar tracks your learning journey</li>
+                        <li>• ✅ Individual card mastery tracking (fixed scoring!)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-2">Learning Features:</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li>• Choose your native language for personalized translations</li>
+                        <li>• Click cards to reveal translations and cultural context</li>
+                        <li>• Learn how concepts relate to your own culture</li>
+                        <li>• Build intercultural communication skills</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="celebration" id="celebration"></div>
-
     <script>
-        const flashcardsData = [
+        // Complete flashcard data covering all textbook content
+        const flashcards = [
+            // ENVIRONMENT CARDS (8)
             {
-                en: { word: "Hello", gesture: "👋", description: "Wave your hand side to side", sound: "hello" },
-                fr: { word: "Bonjour", gesture: "🤝", description: "Handshake or air kisses on cheeks", sound: "bonjour" },
-                ar: { word: "مرحبا", gesture: "🤲", description: "Place right hand over heart", sound: "marhaban" }
+                id: 1,
+                category: "Environnement",
+                french: "la pollution atmosphérique",
+                translations: {
+                    english: "atmospheric pollution",
+                    german: "die Luftverschmutzung",
+                    hindi: "वायुमंडलीय प्रदूषण",
+                    urdu: "فضائی آلودگی",
+                    arabic: "التلوث الجوي",
+                    italian: "Gli italiani esprimono apprezzamento con grande energia"
+                },
+                culturalIcons: {
+                    english: ["👍", "💡", "🚀"],
+                    german: ["👍", "💡", "⚡"],
+                    hindi: ["👍", "💡", "🪔"],
+                    urdu: ["👍", "💡", "⭐"],
+                    arabic: ["👍", "💡", "✨"],
+                    italian: ["👍", "💡", "❤️"]
+                }
             },
             {
-                en: { word: "Thank you", gesture: "🙏", description: "Press palms together", sound: "thank you" },
-                fr: { word: "Merci", gesture: "😊", description: "Smile and slight nod", sound: "merci" },
-                ar: { word: "شكرا", gesture: "🤲", description: "Both hands to chest", sound: "shukran" }
+                id: 2,
+                category: "Environnement",
+                french: "les énergies renouvelables",
+                translations: {
+                    english: "renewable energies",
+                    german: "erneuerbare Energien",
+                    hindi: "नवीकरणीय ऊर्जा",
+                    urdu: "قابل تجدید توانائی",
+                    arabic: "الطاقات المتجددة",
+                    italian: "energie rinnovabili"
+                },
+                culturalContext: {
+                    english: "Solar and wind power investments growing rapidly worldwide",
+                    german: "Deutschland Vorreiter bei Energiewende und Solarenergie",
+                    hindi: "भारत सौर ऊर्जा में विश्व का तीसरा बड़ा उत्पादक बन गया",
+                    urdu: "پاکستان میں سولر اور ہوا کی توانائی کے منصوبے بڑھ رہے",
+                    arabic: "الدول العربية تستثمر في الطاقة الشمسية بقوة",
+                    italian: "L'Italia punta su solare ed eolico per l'indipendenza energetica"
+                },
+                culturalIcons: {
+                    english: ["☀️", "💨", "⚡"],
+                    german: ["☀️", "🌪️", "🏭"],
+                    hindi: ["☀️", "💨", "🕉️"],
+                    urdu: ["☀️", "🌊", "⚡"],
+                    arabic: ["☀️", "🏜️", "⚡"],
+                    italian: ["☀️", "🌊", "⛰️"]
+                }
             },
             {
-                en: { word: "Goodbye", gesture: "👋", description: "Wave hand up and down", sound: "goodbye" },
-                fr: { word: "Au revoir", gesture: "💋", description: "Air kiss or wave", sound: "au revoir" },
-                ar: { word: "وداعا", gesture: "✋", description: "Raise right hand", sound: "wadaan" }
+                id: 3,
+                category: "Environnement",
+                french: "recycler",
+                translations: {
+                    english: "to recycle",
+                    german: "recyceln",
+                    hindi: "पुनर्चक्रण करना",
+                    urdu: "دوبارہ استعمال کرنا",
+                    arabic: "إعادة التدوير",
+                    italian: "riciclare"
+                },
+                culturalContext: {
+                    english: "Mandatory in most communities with sophisticated sorting systems",
+                    german: "Deutschland weltweit führend im Recycling mit dem Grünen Punkt",
+                    hindi: "भारत में पारंपरिक रूप से पुनः उपयोग की संस्कृति रही है",
+                    urdu: "پاکستان میں دوبارہ استعمال کی پرانی روایت موجود ہے",
+                    arabic: "إعادة الاستخدام جزء من الثقافة العربية التقليدية",
+                    italian: "L'Italia leader europeo nel riciclo con ottimi risultati"
+                },
+                culturalIcons: {
+                    english: ["♻️", "🗂️", "🌍"],
+                    german: ["♻️", "🟢", "🏭"],
+                    hindi: ["♻️", "🌿", "🪔"],
+                    urdu: ["♻️", "🌱", "🤝"],
+                    arabic: ["♻️", "🌴", "💎"],
+                    italian: ["♻️", "🌿", "🎨"]
+                }
             },
             {
-                en: { word: "Please", gesture: "🙏", description: "Palms together, slight bow", sound: "please" },
-                fr: { word: "S'il vous plaît", gesture: "🤏", description: "Gentle hand gesture", sound: "s'il vous plait" },
-                ar: { word: "من فضلك", gesture: "🤲", description: "Open palms upward", sound: "min fadlik" }
+                id: 4,
+                category: "Environnement",
+                french: "agir pour le monde",
+                translations: {
+                    english: "to act for the world",
+                    german: "für die Welt handeln",
+                    hindi: "दुनिया के लिए कार्य करना",
+                    urdu: "دنیا کے لیے عمل کرنا",
+                    arabic: "العمل من أجل العالم",
+                    italian: "agire per il mondo"
+                },
+                culturalContext: {
+                    english: "Global citizenship and environmental activism increasingly important",
+                    german: "Weltbürgertum und Umweltaktivismus tief in deutscher Kultur verankert",
+                    hindi: "भारत में 'वसुधैव कुटुम्बकम्' - विश्व एक परिवार की भावना",
+                    urdu: "اسلام میں پوری دنیا کی بہتری کا تصور موجود ہے",
+                    arabic: "الإسلام يحث على العمل لصالح البشرية جمعاء",
+                    italian: "L'impegno globale riflette i valori solidali italiani"
+                },
+                culturalIcons: {
+                    english: ["🌍", "✊", "🌱"],
+                    german: ["🌍", "⚖️", "🌿"],
+                    hindi: ["🌍", "🕉️", "🌱"],
+                    urdu: ["🌍", "🤝", "🌱"],
+                    arabic: ["🌍", "🤲", "🌿"],
+                    italian: ["🌍", "❤️", "🌱"]
+                }
             },
             {
-                en: { word: "Excuse me", gesture: "✋", description: "Raised open palm", sound: "excuse me" },
-                fr: { word: "Excusez-moi", gesture: "👐", description: "Both hands slightly raised", sound: "excusez-moi" },
-                ar: { word: "المعذرة", gesture: "🤚", description: "Hand on chest", sound: "al maadira" }
+                id: 5,
+                category: "Environnement",
+                french: "changer de voiture",
+                translations: {
+                    english: "to change cars",
+                    german: "das Auto wechseln",
+                    hindi: "गाड़ी बदलना",
+                    urdu: "گاڑی تبدیل کرنا",
+                    arabic: "تغيير السيارة",
+                    italian: "cambiare macchina"
+                },
+                culturalContext: {
+                    english: "Shift toward electric vehicles driven by environmental concerns",
+                    german: "Deutschland fördert Elektroautos massiv für Klimaschutz",
+                    hindi: "भारत में इलेक्ट्रिक गाड़ियों की ओर धीरे-धीरे बदलाव हो रहा",
+                    urdu: "پاکستان میں بھی برقی گاڑیوں کی طرف رجحان بڑھ رہا",
+                    arabic: "التحول نحو السيارات الكهربائية في الدول العربية",
+                    italian: "L'Italia incentiva il passaggio alle auto elettriche"
+                },
+                culturalIcons: {
+                    english: ["🚗", "⚡", "🌱"],
+                    german: ["🚗", "⚡", "♻️"],
+                    hindi: ["🚗", "🛺", "💰"],
+                    urdu: ["🚗", "🚌", "🌱"],
+                    arabic: ["🚗", "⚡", "🕌"],
+                    italian: ["🚗", "⚡", "🏛️"]
+                }
             },
             {
-                en: { word: "Yes", gesture: "👍", description: "Thumbs up", sound: "yes" },
-                fr: { word: "Oui", gesture: "👌", description: "OK sign with fingers", sound: "oui" },
-                ar: { word: "نعم", gesture: "✊", description: "Closed fist nod", sound: "naam" }
+                id: 6,
+                category: "Environnement",
+                french: "économiser l'énergie",
+                translations: {
+                    english: "to save energy",
+                    german: "Energie sparen",
+                    hindi: "ऊर्जा की बचत करना",
+                    urdu: "توانائی کی بچت کرنا",
+                    arabic: "توفير الطاقة",
+                    italian: "risparmiare energia"
+                },
+                culturalContext: {
+                    english: "Energy conservation both environmental duty and economic necessity",
+                    german: "Energiesparen traditioneller deutscher Wert seit den 70er Jahren",
+                    hindi: "भारत में ऊर्जा बचत पारंपरिक संस्कार और आर्थिक जरूरत",
+                    urdu: "پاکستان میں توانائی کی قلت کے باعث بچت ضروری",
+                    arabic: "ترشيد استهلاك الطاقة قيمة إسلامية وضرورة اقتصادية",
+                    italian: "Il risparmio energetico tradizione di parsimonia italiana"
+                },
+                culturalIcons: {
+                    english: ["💡", "💰", "🌱"],
+                    german: ["💡", "⚡", "🏠"],
+                    hindi: ["💡", "🪔", "🕉️"],
+                    urdu: ["💡", "💰", "🌙"],
+                    arabic: ["💡", "💎", "☪️"],
+                    italian: ["💡", "💰", "🏡"]
+                }
             },
             {
-                en: { word: "No", gesture: "👎", description: "Thumbs down", sound: "no" },
-                fr: { word: "Non", gesture: "🚫", description: "Index finger wag", sound: "non" },
-                ar: { word: "لا", gesture: "✋", description: "Palm facing outward", sound: "la" }
+                id: 7,
+                category: "Environnement",
+                french: "campagne de sensibilisation",
+                translations: {
+                    english: "awareness campaign",
+                    german: "Aufklärungskampagne",
+                    hindi: "जागरूकता अभियान",
+                    urdu: "آگاہی مہم",
+                    arabic: "حملة توعية",
+                    italian: "campagna di sensibilizzazione"
+                },
+                culturalContext: {
+                    english: "Public awareness campaigns crucial for democratic social change",
+                    german: "Systematische Aufklärung wichtiger Teil deutscher Bildungskultur",
+                    hindi: "भारत में जन-जागरूकता अभियान सामाजिक परिवर्तन का मुख्य साधन",
+                    urdu: "پاکستان میں آگاہی مہمات معاشرتی بہتری کا ذریعہ",
+                    arabic: "حملات التوعية أداة مهمة للإصلاح الاجتماعي",
+                    italian: "Le campagne di sensibilizzazione mobilitano la società civile"
+                },
+                culturalIcons: {
+                    english: ["📢", "👥", "🌱"],
+                    german: ["📢", "📊", "🎯"],
+                    hindi: ["📢", "👥", "🪔"],
+                    urdu: ["📢", "👥", "🌙"],
+                    arabic: ["📢", "👥", "💎"],
+                    italian: ["📢", "👥", "❤️"]
+                }
             },
             {
-                en: { word: "Welcome", gesture: "🤗", description: "Open arms gesture", sound: "welcome" },
-                fr: { word: "Bienvenue", gesture: "🫱", description: "Extended hand", sound: "bienvenue" },
-                ar: { word: "أهلا وسهلا", gesture: "🤲", description: "Both hands welcoming", sound: "ahlan wa sahlan" }
+                id: 8,
+                category: "Environnement",
+                french: "les déchets",
+                translations: {
+                    english: "waste/garbage",
+                    german: "der Müll",
+                    hindi: "कचरा",
+                    urdu: "کوڑا کرکٹ",
+                    arabic: "النفايات",
+                    italian: "i rifiuti"
+                },
+                culturalContext: {
+                    english: "Waste management sophisticated with multiple recycling streams",
+                    german: "Deutsche Mülltrennung weltweit vorbildlich und sehr detailliert",
+                    hindi: "भारत में कचरा प्रबंधन बड़ी चुनौती, स्वच्छ भारत अभियान चलाया गया",
+                    urdu: "پاکستان میں کوڑے کرکٹ کا بہتر انتظام اہم ضرورت ہے",
+                    arabic: "إدارة النفايات تحد بيئي كبير في المدن العربية",
+                    italian: "La gestione rifiuti migliorata molto con raccolta differenziata"
+                },
+                culturalIcons: {
+                    english: ["🗑️", "♻️", "🌍"],
+                    german: ["🗑️", "🟢", "📋"],
+                    hindi: ["🗑️", "🧹", "🪔"],
+                    urdu: ["🗑️", "🧹", "🌙"],
+                    arabic: ["🗑️", "🧹", "🕌"],
+                    italian: ["🗑️", "♻️", "🎨"]
+                }
+            },
+
+            // TECHNOLOGY CARDS (8)
+            {
+                id: 9,
+                category: "Technologie",
+                french: "Internet",
+                translations: {
+                    english: "Internet",
+                    german: "das Internet",
+                    hindi: "इंटरनेट",
+                    urdu: "انٹرنیٹ",
+                    arabic: "الإنترنت",
+                    italian: "Internet"
+                },
+                culturalContext: {
+                    english: "Internet central to daily life, work, education, and entertainment",
+                    german: "Deutschland investiert massiv in Glasfaser für schnelles Internet",
+                    hindi: "भारत दुनिया का दूसरा सबसे बड़ा इंटरनेट उपयोगकर्ता देश",
+                    urdu: "پاکستان میں موبائل انٹرنیٹ کا استعمال تیزی سے بڑھ رہا",
+                    arabic: "الإنترنت يربط العالم العربي ويعزز التبادل الثقافي",
+                    italian: "L'Italia abbraccia la digitalizzazione per modernizzare il paese"
+                },
+                culturalIcons: {
+                    english: ["🌐", "💻", "📱"],
+                    german: ["🌐", "⚡", "🏭"],
+                    hindi: ["🌐", "📱", "🪔"],
+                    urdu: ["🌐", "📱", "🌙"],
+                    arabic: ["🌐", "📱", "🕌"],
+                    italian: ["🌐", "📱", "🍝"]
+                }
             },
             {
-                en: { word: "Beautiful", gesture: "😍", description: "Kiss fingers and gesture outward", sound: "beautiful" },
-                fr: { word: "Magnifique", gesture: "💋", description: "Chef's kiss", sound: "magnifique" },
-                ar: { word: "جميل", gesture: "👌", description: "Finger to lips then outward", sound: "jameel" }
+                id: 10,
+                category: "Technologie",
+                french: "créer un blog",
+                translations: {
+                    english: "to create a blog",
+                    german: "einen Blog erstellen",
+                    hindi: "ब्लॉग बनाना",
+                    urdu: "بلاگ بنانا",
+                    arabic: "إنشاء مدونة",
+                    italian: "creare un blog"
+                },
+                culturalContext: {
+                    english: "Blogging popular for personal branding and sharing expertise",
+                    german: "Deutsche Blogs oft sehr fachspezifisch und gut recherchiert",
+                    hindi: "भारत में हिंदी और अंग्रेजी ब्लॉगिंग तेजी से बढ़ रहा है",
+                    urdu: "پاکستان میں اردو بلاگنگ اور ویلاگنگ بہت مقبول",
+                    arabic: "التدوين العربي ينمو مع زيادة المحتوى الرقمي",
+                    italian: "I blog italiani spesso su cibo, viaggi e lifestyle"
+                },
+                culturalIcons: {
+                    english: ["💻", "📝", "🚀"],
+                    german: ["💻", "📊", "🔬"],
+                    hindi: ["💻", "✍️", "🕉️"],
+                    urdu: ["💻", "✍️", "🌙"],
+                    arabic: ["💻", "✍️", "📚"],
+                    italian: ["💻", "🍝", "✈️"]
+                }
+            },
+            {
+                id: 11,
+                category: "Technologie",
+                french: "tchatter",
+                translations: {
+                    english: "to chat online",
+                    german: "chatten",
+                    hindi: "ऑनलाइन चैट करना",
+                    urdu: "آن لائن گفتگو کرنا",
+                    arabic: "المحادثة عبر الإنترنت",
+                    italian: "chattare"
+                },
+                culturalContext: {
+                    english: "Online chatting dominant form of quick daily communication",
+                    german: "Chatten besonders bei deutschen Jugendlichen sehr verbreitet",
+                    hindi: "भारत में चैटिंग व्हाट्सऐप के माध्यम से बहुत लोकप्रिय",
+                    urdu: "پاکستان میں چیٹنگ روزمرہ کے رابطے کا بنیادی ذریعہ",
+                    arabic: "المحادثة الفورية جزء أساسي من التواصل اليومي",
+                    italian: "Chattare essenziale per i rapporti sociali digitali"
+                },
+                culturalIcons: {
+                    english: ["💬", "📱", "⚡"],
+                    german: ["💬", "📱", "🤖"],
+                    hindi: ["💬", "📱", "🪔"],
+                    urdu: ["💬", "📱", "🌙"],
+                    arabic: ["💬", "📱", "☪️"],
+                    italian: ["💬", "📱", "☕"]
+                }
+            },
+            {
+                id: 12,
+                category: "Technologie",
+                french: "courrier électronique",
+                translations: {
+                    english: "email",
+                    german: "E-Mail",
+                    hindi: "ईमेल",
+                    urdu: "ای میل",
+                    arabic: "البريد الإلكتروني",
+                    italian: "email"
+                },
+                culturalContext: {
+                    english: "Email remains essential for formal business communication",
+                    german: "E-Mail wichtig für offizielle Kommunikation in Deutschland",
+                    hindi: "भारत में ईमेल व्यावसायिक संपर्क का मुख्य साधन है",
+                    urdu: "پاکستان میں ای میل کاروباری مراسلات کے لیے اہم",
+                    arabic: "البريد الإلكتروني أساسي للمراسلات الرسمية",
+                    italian: "L'email essenziale per la comunicazione professionale"
+                },
+                culturalIcons: {
+                    english: ["📧", "💼", "⚡"],
+                    german: ["📧", "🏢", "📊"],
+                    hindi: ["📧", "💼", "🪔"],
+                    urdu: ["📧", "💼", "🌙"],
+                    arabic: ["📧", "💼", "📜"],
+                    italian: ["📧", "💼", "☕"]
+                }
+            },
+            {
+                id: 13,
+                category: "Technologie",
+                french: "messagerie instantanée",
+                translations: {
+                    english: "instant messaging",
+                    german: "Sofortnachrichten",
+                    hindi: "तत्काल संदेश",
+                    urdu: "فوری پیغام رسانی",
+                    arabic: "المراسلة الفورية",
+                    italian: "messaggistica istantanea"
+                },
+                culturalContext: {
+                    english: "WhatsApp, Messenger revolutionized how people communicate",
+                    german: "WhatsApp dominiert die deutsche Alltagskommunikation",
+                    hindi: "भारत में व्हाट्सऐप परिवारिक संपर्क का मुख्य साधन",
+                    urdu: "پاکستان میں واٹس ایپ اور میسجنگ روزمرہ کا حصہ",
+                    arabic: "تطبيقات المراسلة الفورية غيرت طبيعة التواصل",
+                    italian: "La messaggistica istantanea fondamentale per gli italiani"
+                },
+                culturalIcons: {
+                    english: ["⚡", "💬", "📱"],
+                    german: ["⚡", "💬", "🤖"],
+                    hindi: ["⚡", "💬", "👥"],
+                    urdu: ["⚡", "💬", "👥"],
+                    arabic: ["⚡", "💬", "👥"],
+                    italian: ["⚡", "💬", "☕"]
+                }
+            },
+            {
+                id: 14,
+                category: "Technologie",
+                french: "télécharger",
+                translations: {
+                    english: "to download",
+                    german: "herunterladen",
+                    hindi: "डाउनलोड करना",
+                    urdu: "ڈاؤن لوڈ کرنا",
+                    arabic: "تحميل",
+                    italian: "scaricare"
+                },
+                culturalContext: {
+                    english: "Downloading apps and content part of daily digital life",
+                    german: "Deutsche achten sehr auf Datenschutz beim Herunterladen",
+                    hindi: "भारत में मोबाइल ऐप्स डाउनलोड करना बहुत आम है",
+                    urdu: "پاکستان میں ڈاؤن لوڈ کرنا روزانہ کا معمول ہے",
+                    arabic: "التحميل جزء أساسي من استخدام التكنولوجيا",
+                    italian: "Scaricare contenuti normale nella cultura digitale"
+                },
+                culturalIcons: {
+                    english: ["⬇️", "📱", "💾"],
+                    german: ["⬇️", "🔒", "💻"],
+                    hindi: ["⬇️", "📱", "🪔"],
+                    urdu: ["⬇️", "📱", "🌙"],
+                    arabic: ["⬇️", "📱", "💎"],
+                    italian: ["⬇️", "📱", "🎵"]
+                }
+            },
+            {
+                id: 15,
+                category: "Technologie",
+                french: "partager ses opinions",
+                translations: {
+                    english: "to share one's opinions",
+                    german: "seine Meinung teilen",
+                    hindi: "अपनी राय साझा करना",
+                    urdu: "اپنی رائے شیئر کرنا",
+                    arabic: "مشاركة الآراء",
+                    italian: "condividere le proprie opinioni"
+                },
+                culturalContext: {
+                    english: "Free speech and open debate fundamental social media values",
+                    german: "Meinungsfreiheit wichtig, Deutsche diskutieren oft sachlicher",
+                    hindi: "भारत में सोशल मीडिया पर विविध मतों का जोरदार आदान-प्रदान",
+                    urdu: "پاکستان میں رائے کا اظہار اہم لیکن احترام کے ساتھ",
+                    arabic: "تبادل الآراء مهمة مع احترام التقاليد والقيم",
+                    italian: "Gli italiani amano dibattere animatamente ma con passione"
+                },
+                culturalIcons: {
+                    english: ["💬", "🗳️", "📢"],
+                    german: ["💬", "📋", "⚖️"],
+                    hindi: ["💬", "🗣️", "🕉️"],
+                    urdu: ["💬", "🤝", "🌙"],
+                    arabic: ["💬", "👥", "📖"],
+                    italian: ["💬", "🤌", "❤️"]
+                }
+            },
+            {
+                id: 16,
+                category: "Technologie",
+                french: "site web",
+                translations: {
+                    english: "website",
+                    german: "Webseite",
+                    hindi: "वेबसाइट",
+                    urdu: "ویب سائٹ",
+                    arabic: "موقع إلكتروني",
+                    italian: "sito web"
+                },
+                culturalContext: {
+                    english: "Websites essential for business, education, and information",
+                    german: "Deutsche Webseiten oft sehr detailliert und informativ",
+                    hindi: "भारत में वेबसाइट व्यापार और सेवाओं के लिए जरूरी",
+                    urdu: "پاکستان میں ویب سائٹس کاروبار کے لیے اہم ہو رہی",
+                    arabic: "المواقع الإلكترونية أساسية للأعمال والتعليم",
+                    italian: "I siti web cruciali per business e comunicazione"
+                },
+                culturalIcons: {
+                    english: ["🌐", "💻", "📄"],
+                    german: ["🌐", "📊", "🏢"],
+                    hindi: ["🌐", "💻", "🪔"],
+                    urdu: ["🌐", "💻", "🌙"],
+                    arabic: ["🌐", "💻", "📚"],
+                    italian: ["🌐", "💻", "🎨"]
+                }
+            },
+
+            // GRAMMAR CARDS (8)
+            {
+                id: 17,
+                category: "Grammaire",
+                french: "Je voudrais...",
+                translations: {
+                    english: "I would like...",
+                    german: "Ich hätte gern...",
+                    hindi: "मैं चाहूंगा/चाहूंगी...",
+                    urdu: "میں چاہوں گا/گی...",
+                    arabic: "أود أن...",
+                    italian: "Vorrei..."
+                },
+                culturalContext: {
+                    english: "Polite indirectness expected in formal requests",
+                    german: "Höflichkeit durch Konjunktiv zeigt Respekt und Bildung",
+                    hindi: "विनम्रता दिखाने के लिए शर्त का प्रयोग महत्वपूर्ण है",
+                    urdu: "ادب اور احترام کے لیے شرطی جملے استعمال کرتے ہیں",
+                    arabic: "الأدب في الطلب جزء أساسي من الثقافة العربية",
+                    italian: "La cortesia nelle richieste fondamentale nella cultura italiana"
+                },
+                culturalIcons: {
+                    english: ["🙏", "🎩", "☕"],
+                    german: ["🙏", "📝", "🍺"],
+                    hindi: ["🙏", "🪔", "👑"],
+                    urdu: ["🙏", "🌙", "☕"],
+                    arabic: ["🙏", "🕌", "☕"],
+                    italian: ["🙏", "🤌", "☕"]
+                }
+            },
+            {
+                id: 18,
+                category: "Grammaire",
+                french: "parce que",
+                translations: {
+                    english: "because",
+                    german: "weil",
+                    hindi: "क्योंकि",
+                    urdu: "کیونکہ",
+                    arabic: "لأن",
+                    italian: "perché"
+                },
+                culturalContext: {
+                    english: "Logical reasoning valued in academic and professional discourse",
+                    german: "Deutsche Sprache betont kausale Zusammenhänge sehr stark",
+                    hindi: "भारतीय भाषाओं में कारण-प्रभाव का स्पष्ट उल्लेख जरूरी",
+                    urdu: "اردو میں وجہ بیان کرنا شائستگی کا حصہ ہے",
+                    arabic: "التعليل والتبرير مهمان في البلاغة العربية",
+                    italian: "Spiegare i motivi importante nella comunicazione italiana"
+                },
+                culturalIcons: {
+                    english: ["🧠", "🔗", "📝"],
+                    german: ["🧠", "⚖️", "📊"],
+                    hindi: ["🧠", "🔗", "📚"],
+                    urdu: ["🧠", "🔗", "📖"],
+                    arabic: ["🧠", "🔗", "📜"],
+                    italian: ["🧠", "🔗", "✨"]
+                }
+            },
+            {
+                id: 19,
+                category: "Grammaire",
+                french: "donc",
+                translations: {
+                    english: "therefore / so",
+                    german: "also / deshalb",
+                    hindi: "इसलिए",
+                    urdu: "لہذا",
+                    arabic: "إذن",
+                    italian: "quindi"
+                },
+                culturalContext: {
+                    english: "Clear conclusions essential in structured arguments",
+                    german: "Folgerungen werden klar markiert in deutscher Rhetorik",
+                    hindi: "निष्कर्ष निकालना भारतीय तर्कशास्त्र की परंपरा है",
+                    urdu: "نتیجہ اخذ کرنا منطقی بحث کا اہم حصہ ہے",
+                    arabic: "الاستنتاج ركن أساسي في المنطق العربي",
+                    italian: "Le conclusioni logiche apprezzate nel discorso italiano"
+                },
+                culturalIcons: {
+                    english: ["➡️", "💡", "✅"],
+                    german: ["➡️", "🎯", "📈"],
+                    hindi: ["➡️", "🧘", "✨"],
+                    urdu: ["➡️", "💭", "⭐"],
+                    arabic: ["➡️", "💎", "📝"],
+                    italian: ["➡️", "🎨", "❤️"]
+                }
+            },
+            {
+                id: 20,
+                category: "Grammaire",
+                french: "si j'étais...",
+                translations: {
+                    english: "if I were...",
+                    german: "wenn ich wäre...",
+                    hindi: "अगर मैं होता/होती...",
+                    urdu: "اگر میں ہوتا/ہوتی...",
+                    arabic: "لو كنت...",
+                    italian: "se fossi..."
+                },
+                culturalContext: {
+                    english: "Hypothetical thinking encouraged for creativity and problem-solving",
+                    german: "Konjunktiv zeigt Bildung und differenziertes Denken",
+                    hindi: "कल्पना और संभावना भारतीय दर्शन में महत्वपूर्ण हैं",
+                    urdu: "فرضی صورتحال پر غور اردو ادب کا حصہ ہے",
+                    arabic: "التخيل والافتراض مهمان في التفكير العربي",
+                    italian: "I condizionali esprimono desideri e possibilità"
+                },
+                culturalIcons: {
+                    english: ["🤔", "💭", "🌟"],
+                    german: ["🤔", "📚", "⚡"],
+                    hindi: ["🤔", "🪔", "🕉️"],
+                    urdu: ["🤔", "🌙", "✨"],
+                    arabic: ["🤔", "🕌", "💎"],
+                    italian: ["🤔", "🎭", "❤️"]
+                }
+            },
+            {
+                id: 21,
+                category: "Grammaire",
+                french: "peindre",
+                translations: {
+                    english: "to paint",
+                    german: "malen",
+                    hindi: "चित्र बनाना",
+                    urdu: "تصویر بنانا",
+                    arabic: "يرسم",
+                    italian: "dipingere"
+                },
+                culturalContext: {
+                    english: "Painting both artistic expression and practical home improvement",
+                    german: "Malen wichtiger Teil der deutschen Kunsttradition",
+                    hindi: "भारत में चित्रकला हजारों साल की कलात्मक परंपरा है",
+                    urdu: "پاکستان میں مصوری اسلامی فن کا حصہ ہے",
+                    arabic: "الرسم والتصوير تراث فني إسلامي عريق",
+                    italian: "Dipingere nel DNA culturale italiano da Leonardo a oggi"
+                },
+                culturalIcons: {
+                    english: ["🎨", "🖌️", "🏠"],
+                    german: ["🎨", "🖌️", "🏛️"],
+                    hindi: ["🎨", "🖌️", "🪔"],
+                    urdu: ["🎨", "🖌️", "🕌"],
+                    arabic: ["🎨", "🖌️", "📐"],
+                    italian: ["🎨", "🖌️", "🍝"]
+                }
+            },
+            {
+                id: 22,
+                category: "Grammaire",
+                french: "car",
+                translations: {
+                    english: "because/for (formal)",
+                    german: "denn",
+                    hindi: "क्योंकि (औपचारिक)",
+                    urdu: "کیونکہ (رسمی)",
+                    arabic: "لأن (رسمي)",
+                    italian: "poiché (formale)"
+                },
+                culturalContext: {
+                    english: "Formal connector used in written and academic contexts",
+                    german: "'Denn' formeller als 'weil' in gehobener Sprache",
+                    hindi: "औपचारिक लेखन में कारण बताने का शिष्ट तरीका",
+                    urdu: "رسمی تحریر میں وجہ بیان کرنے کا مہذب انداز",
+                    arabic: "أداة ربط رسمية في الكتابة الأكاديمية",
+                    italian: "Connettore formale per testi scritti e ufficiali"
+                },
+                culturalIcons: {
+                    english: ["📚", "✍️", "🎓"],
+                    german: ["📚", "📝", "🏛️"],
+                    hindi: ["📚", "✍️", "🪔"],
+                    urdu: ["📚", "✍️", "🌙"],
+                    arabic: ["📚", "✍️", "📜"],
+                    italian: ["📚", "✍️", "🎨"]
+                }
+            },
+            {
+                id: 23,
+                category: "Grammaire",
+                french: "puisque",
+                translations: {
+                    english: "since/as (reason)",
+                    german: "da (Grund)",
+                    hindi: "चूंकि",
+                    urdu: "چونکہ",
+                    arabic: "بما أن",
+                    italian: "dato che"
+                },
+                culturalContext: {
+                    english: "Shows assumed knowledge between speaker and listener",
+                    german: "'Da' zeigt geteiltes Wissen zwischen Gesprächspartnern",
+                    hindi: "पूर्व ज्ञान पर आधारित कारण बताने का तरीका",
+                    urdu: "مشترکہ معلومات کی بنیاد پر وجہ بیان کرنا",
+                    arabic: "يدل على معرفة مشتركة بين المتحدث والمستمع",
+                    italian: "Indica conoscenza condivisa tra chi parla e ascolta"
+                },
+                culturalIcons: {
+                    english: ["🤝", "💭", "📖"],
+                    german: ["🤝", "🧠", "📚"],
+                    hindi: ["🤝", "💭", "🪔"],
+                    urdu: ["🤝", "💭", "🌙"],
+                    arabic: ["🤝", "💭", "📚"],
+                    italian: ["🤝", "💭", "☕"]
+                }
+            },
+            {
+                id: 24,
+                category: "Grammaire",
+                french: "alors",
+                translations: {
+                    english: "so/then",
+                    german: "also/dann",
+                    hindi: "तो/फिर",
+                    urdu: "تو/پھر",
+                    arabic: "إذن/حينذاك",
+                    italian: "allora"
+                },
+                culturalContext: {
+                    english: "Versatile connector for conclusions and narrative sequence",
+                    german: "'Dann' zeigt zeitliche oder logische Abfolge",
+                    hindi: "कहानी और तर्क में अगला कदम दिखाने के लिए",
+                    urdu: "کہانی اور منطق میں اگلا مرحلہ ظاہر کرنے کے لیے",
+                    arabic: "أداة ربط للاستنتاج والتسلسل الزمني",
+                    italian: "Connettore versatile per conclusioni e narrazione"
+                },
+                culturalIcons: {
+                    english: ["⏭️", "🔄", "📈"],
+                    german: ["⏭️", "📊", "⚡"],
+                    hindi: ["⏭️", "🔄", "🪔"],
+                    urdu: ["⏭️", "🔄", "🌙"],
+                    arabic: ["⏭️", "🔄", "📚"],
+                    italian: ["⏭️", "🔄", "🎭"]
+                }
+            },
+
+            // LEARNING SKILLS CARDS (8)
+            {
+                id: 25,
+                category: "Apprentissage",
+                french: "écouter et répéter",
+                translations: {
+                    english: "to listen and repeat",
+                    german: "hören und wiederholen",
+                    hindi: "सुनना और दोहराना",
+                    urdu: "سننا اور دہرانا",
+                    arabic: "الاستماع والتكرار",
+                    italian: "ascoltare e ripetere"
+                },
+                culturalContext: {
+                    english: "Fundamental language learning technique in audio-lingual method",
+                    german: "Wiederholung klassische deutsche Lernmethode",
+                    hindi: "भारत में गुरु के बाद दोहراना पारंپरिक शिक्षा पद्धति",
+                    urdu: "پاکستان میں اساتذہ کے بعد دہرانا روایتی طریقہ",
+                    arabic: "التكرار أسلوب تعليمي عريق في الثقافة الإسلامية",
+                    italian: "Ripetere metodo tradizionale italiano di apprendimento"
+                },
+                culturalIcons: {
+                    english: ["👂", "🗣️", "📚"],
+                    german: ["👂", "🗣️", "📖"],
+                    hindi: ["👂", "🗣️", "🪔"],
+                    urdu: ["👂", "🗣️", "📖"],
+                    arabic: ["👂", "🗣️", "📜"],
+                    italian: ["👂", "🗣️", "🎵"]
+                }
+            },
+            {
+                id: 26,
+                category: "Apprentissage",
+                french: "débattre un problème",
+                translations: {
+                    english: "to debate a problem",
+                    german: "ein Problem diskutieren",
+                    hindi: "समस्या पर बहस करना",
+                    urdu: "مسئلے پر بحث کرنا",
+                    arabic: "مناقشة مشكلة",
+                    italian: "dibattere un problema"
+                },
+                culturalContext: {
+                    english: "Constructive debate valued in democratic education systems",
+                    german: "Sachliche Diskussion wichtiger deutscher Bildungswert",
+                    hindi: "भारत में शास्त्रार्थ और वाद-विवाद की समृद्ध परंपरा",
+                    urdu: "پاکستان میں مباحثہ اور گفتگو کی روایت ہے",
+                    arabic: "الجدل والمناظرة تراث عربي إسلامي عريق",
+                    italian: "Il dibattito appassionato parte della cultura italiana"
+                },
+                culturalIcons: {
+                    english: ["🗣️", "⚖️", "💭"],
+                    german: ["🗣️", "📊", "🧠"],
+                    hindi: ["🗣️", "📚", "🕉️"],
+                    urdu: ["🗣️", "📖", "💭"],
+                    arabic: ["🗣️", "📜", "💎"],
+                    italian: ["🗣️", "🤌", "❤️"]
+                }
+            },
+            {
+                id: 27,
+                category: "Apprentissage",
+                french: "faire des hypothèses",
+                translations: {
+                    english: "to make hypotheses",
+                    german: "Hypothesen aufstellen",
+                    hindi: "परिकल्पना करना",
+                    urdu: "قیاس آرائی کرنا",
+                    arabic: "وضع الفرضيات",
+                    italian: "fare ipotesi"
+                },
+                culturalContext: {
+                    english: "Scientific thinking and critical analysis fundamental in education",
+                    german: "Hypothesenbildung Kernbestandteil deutscher Wissenschaftstradition",
+                    hindi: "भारतीय दर्शन में अनुमान और परिकल्पना की समृद्ध परंपरा",
+                    urdu: "اسلامی علمی روایت میں قیاس اور استنباط کی اہمیت",
+                    arabic: "الفرضيات أساس المنهج العلمي في التراث الإسلامي",
+                    italian: "Le ipotesi fondamentali nel metodo scientifico italiano"
+                },
+                culturalIcons: {
+                    english: ["🔬", "💭", "❓"],
+                    german: ["🔬", "📊", "⚡"],
+                    hindi: ["🔬", "🧘", "🪔"],
+                    urdu: ["🔬", "💭", "🌙"],
+                    arabic: ["🔬", "💎", "📚"],
+                    italian: ["🔬", "🎨", "💡"]
+                }
+            },
+            {
+                id: 28,
+                category: "Apprentissage",
+                french: "lire les textes",
+                translations: {
+                    english: "to read texts",
+                    german: "Texte lesen",
+                    hindi: "पाठ पढ़ना",
+                    urdu: "متن پڑھنا",
+                    arabic: "قراءة النصوص",
+                    italian: "leggere i testi"
+                },
+                culturalContext: {
+                    english: "Close reading and text analysis central to education",
+                    german: "Gründliches Textverständnis wichtig in deutscher Bildung",
+                    hindi: "भारत में पाठ अध्ययन शिक्षा की आधारशिला है",
+                    urdu: "پاکستان میں متن کا مطالعہ تعلیم کا بنیادی حصہ",
+                    arabic: "دراسة النصوص ركن أساسي في التعليم العربي",
+                    italian: "La lettura attenta tradizione dell'educazione italiana"
+                },
+                culturalIcons: {
+                    english: ["📖", "👀", "🧠"],
+                    german: ["📖", "🔍", "📚"],
+                    hindi: ["📖", "👀", "🪔"],
+                    urdu: ["📖", "👀", "🌙"],
+                    arabic: ["📖", "👀", "📜"],
+                    italian: ["📖", "👀", "☕"]
+                }
+            },
+            {
+                id: 29,
+                category: "Culture",
+                french: "Bonne idée!",
+                translations: {
+                    english: "Good idea!",
+                    german: "Gute Idee!",
+                    hindi: "अच्छा विचार!",
+                    urdu: "اچھا خیال!",
+                    arabic: "فكرة جيدة!",
+                    italian: "Buona idea!"
+                },
+                culturalContext: {
+                    english: "Enthusiasm and positive feedback openly expressed",
+                    german: "Deutsche schätzen praktische, durchdachte Ideen",
+                    hindi: "भारत में नए विचारों का जोरदार स्वागत और सराहना",
+                    urdu: "پاکستان میں اچھے خیالات کی قدر اور حوصلہ افزائی",
+                    arabic: "تقدير الأفكار الجيدة واجب اجتماعي في الثقافة العربية",
+                    italian: "Gli italiani esprimono apprezzamento con grande energia"
+                },
+                culturalIcons: {
+                    english: ["📖", "👀", "🧠"],
+                    german: ["📖", "🔍", "📚"],
+                    hindi: ["📖", "👀", "🪔"],
+                    urdu: ["📖", "👀", "🌙"],
+                    arabic: ["📖", "👀", "📜"],
+                    italian: ["📖", "👀", "☕"]
+                }
+            },
+            {
+                id: 30,
+                category: "Apprentissage",
+                french: "convaincre les lecteurs",
+                translations: {
+                    english: "to convince readers",
+                    german: "die Leser überzeugen",
+                    hindi: "पाठकों को मनाना",
+                    urdu: "قارئین کو قائل کرنا",
+                    arabic: "إقناع القراء",
+                    italian: "convincere i lettori"
+                },
+                culturalContext: {
+                    english: "Persuasive writing essential skill in democratic societies",
+                    german: "Überzeugungskraft wichtig in deutscher Argumentationskultur",
+                    hindi: "भारत में तर्कसंगत प्रभाव डालना बहस की कला है",
+                    urdu: "پاکستان میں قائل کرنے کا فن بیان کا حصہ ہے",
+                    arabic: "فن الإقناع جزء من البلاغة والخطابة العربية",
+                    italian: "Convincere parte dell'arte retorica italiana"
+                },
+                culturalIcons: {
+                    english: ["✍️", "🎯", "📈"],
+                    german: ["✍️", "📊", "⚖️"],
+                    hindi: ["✍️", "🎯", "🪔"],
+                    urdu: ["✍️", "🎯", "🌙"],
+                    arabic: ["✍️", "🎯", "📜"],
+                    italian: ["✍️", "🎯", "🎭"]
+                }
+            },
+            {
+                id: 31,
+                category: "Environnement",
+                french: "proposer des solutions",
+                translations: {
+                    english: "to propose solutions",
+                    german: "Lösungen vorschlagen",
+                    hindi: "समाधान प्रस्तावित करना",
+                    urdu: "حل تجویز کرنا",
+                    arabic: "اقتراح الحلول",
+                    italian: "proporre soluzioni"
+                },
+                culturalContext: {
+                    english: "Solution-oriented thinking valued in problem-solving culture",
+                    german: "Lösungsorientiertheit typisch deutsche Herangehensweise",
+                    hindi: "भारत में समस्या-समाधान की व्यावहारिक परंपरा है",
+                    urdu: "پاکستان میں حل تلاش کرنے کی روایت موجود ہے",
+                    arabic: "البحث عن الحلول جزء من الحكمة العربية",
+                    italian: "Trovare soluzioni creative caratteristica italiana"
+                },
+                culturalIcons: {
+                    english: ["💡", "🔧", "🎯"],
+                    german: ["💡", "⚙️", "📊"],
+                    hindi: ["💡", "🔧", "🪔"],
+                    urdu: ["💡", "🔧", "🌙"],
+                    arabic: ["💡", "🔧", "💎"],
+                    italian: ["💡", "🔧", "🎨"]
+                }
+            },
+            {
+                id: 32,
+                category: "Culture",
+                french: "C'est vrai!",
+                translations: {
+                    english: "That's true!",
+                    german: "Das stimmt!",
+                    hindi: "यह सच है!",
+                    urdu: "یہ سچ ہے!",
+                    arabic: "هذا صحيح!",
+                    italian: "È vero!"
+                },
+                culturalContext: {
+                    english: "Agreement and validation important in conversations",
+                    german: "Zustimmung zeigt aktives Zuhören in deutscher Kommunikation",
+                    hindi: "भारत में सहमति जताना बातचीत का शिष्टाचार है",
+                    urdu: "پاکستان میں اتفاق ظاہر کرنا گفتگو کا ادب ہے",
+                    arabic: "التأكيد والموافقة جزء من أدب الحديث العربي",
+                    italian: "Confermare e concordare tipico dell'interazione italiana"
+                },
+                culturalIcons: {
+                    english: ["✅", "👍", "💯"],
+                    german: ["✅", "👍", "📊"],
+                    hindi: ["✅", "👍", "🪔"],
+                    urdu: ["✅", "👍", "🌙"],
+                    arabic: ["✅", "👍", "📚"],
+                    italian: ["✅", "👍", "❤️"]
+                }
             }
         ];
 
-        let currentCardIndex = 0;
+        const languages = {
+            english: { name: "English", flag: "🇺🇸" },
+            german: { name: "Deutsch", flag: "🇩🇪" },
+            hindi: { name: "हिन्दी", flag: "🇮🇳" },
+            urdu: { name: "اردو", flag: "🇵🇰" },
+            arabic: { name: "العربية", flag: "🇪🇬" },
+            italian: { name: "Italiano", flag: "🇮🇹" }
+        };
+
+        const categories = ["Tous", "Environnement", "Technologie", "Grammaire", "Apprentissage", "Culture"];
+
+        // Game state
+        let currentCard = 0;
         let isFlipped = false;
+        let score = 0;
+        let knownCards = new Set();
+        let selectedCategory = "Tous";
+        let nativeLanguage = "english";
+        let filteredCards = flashcards;
 
-        const flashcard = document.getElementById('flashcard');
-        const frontWord = document.getElementById('frontWord');
-        const frontGesture = document.getElementById('frontGesture');
-        const frontGestureDesc = document.getElementById('frontGestureDesc');
-        const langIndicator = document.getElementById('langIndicator');
-        const translations = document.getElementById('translations');
-        const cardCounter = document.getElementById('cardCounter');
-        const progressFill = document.getElementById('progressFill');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-
-        function updateCard() {
-            const card = flashcardsData[currentCardIndex];
-            const currentLang = getCurrentLanguage();
-            const langData = card[currentLang];
-            
-            // Add entrance animation
-            flashcard.classList.add('card-enter');
-            setTimeout(() => flashcard.classList.remove('card-enter'), 600);
-            
-            frontWord.textContent = langData.word;
-            frontWord.className = currentLang === 'ar' ? 'word arabic' : 'word';
-            frontGesture.textContent = langData.gesture;
-            frontGestureDesc.textContent = langData.description;
-            
-            // Update language indicator
-            const langMap = { en: 'EN', fr: 'FR', ar: 'AR' };
-            langIndicator.textContent = langMap[currentLang];
-            langIndicator.className = `language-indicator lang-${currentLang}`;
-            
-            // Update back side with other languages
-            updateTranslations();
-            
-            // Update progress and counter
-            cardCounter.textContent = `Card ${currentCardIndex + 1} of ${flashcardsData.length}`;
-            progressFill.style.width = `${((currentCardIndex + 1) / flashcardsData.length) * 100}%`;
-            
-            // Update navigation buttons
-            prevBtn.disabled = currentCardIndex === 0;
-            nextBtn.disabled = currentCardIndex === flashcardsData.length - 1;
-            
-            // Reset flip state
-            if (isFlipped) {
-                toggleFlip();
+        // Text-to-Speech function
+        function playSound(event) {
+            event.stopPropagation();
+            const card = filteredCards[currentCard];
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(card.french);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
             }
         }
 
-        function getCurrentLanguage() {
-            const languages = ['en', 'fr', 'ar'];
-            return languages[currentCardIndex % 3];
+        function initGame() {
+            createLanguageButtons();
+            createCategoryButtons();
+            updateCard();
+            updateProgress();
         }
 
-        function updateTranslations() {
-            const card = flashcardsData[currentCardIndex];
-            const currentLang = getCurrentLanguage();
-            const otherLangs = Object.keys(card).filter(lang => lang !== currentLang);
-            
-            translations.innerHTML = otherLangs.map(lang => {
-                const data = card[lang];
-                const langNames = { en: 'English', fr: 'Français', ar: 'العربية' };
-                const wordClass = lang === 'ar' ? 'word arabic' : 'word';
-                
-                return `
-                    <div class="translation-item">
-                        <div class="language-indicator lang-${lang}">
-                            ${langNames[lang]}
-                        </div>
-                        <div class="${wordClass}">${data.word}</div>
-                        <div class="gesture">${data.gesture}</div>
-                        <div class="gesture-description">${data.description}</div>
-                        <button class="sound-btn" onclick="playSound('${lang}', event)">
-                            🔊 Play ${langNames[lang]}
-                        </button>
-                    </div>
-                `;
-            }).join('');
+        function createLanguageButtons() {
+            const container = document.getElementById('languageButtons');
+            container.innerHTML = '';
+
+            Object.entries(languages).forEach(([code, lang]) => {
+                const button = document.createElement('button');
+                button.className = `flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all transform hover:scale-105 ${nativeLanguage === code
+                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md border'
+                    }`;
+                button.innerHTML = `<span class="text-xl">${lang.flag}</span> ${lang.name}`;
+                button.onclick = () => selectLanguage(code);
+                container.appendChild(button);
+            });
         }
 
-        function toggleFlip() {
+        function createCategoryButtons() {
+            const container = document.getElementById('categoryButtons');
+            container.innerHTML = '';
+
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.className = `px-6 py-3 rounded-full font-medium transition-all transform hover:scale-105 ${selectedCategory === category
+                    ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
+                    : 'bg-white text-gray-600 hover:bg-gray-50 shadow-md border'
+                    }`;
+                button.textContent = category;
+                button.onclick = () => selectCategory(category);
+                container.appendChild(button);
+            });
+        }
+
+        function selectLanguage(code) {
+            nativeLanguage = code;
+            createLanguageButtons();
+            updateCard();
+        }
+
+        function selectCategory(category) {
+            selectedCategory = category;
+            filteredCards = category === "Tous" ? flashcards : flashcards.filter(card => card.category === category);
+            currentCard = 0;
+            createCategoryButtons();
+            updateCard();
+            updateProgress();
+            resetFlip();
+        }
+
+        function updateCard() {
+            const card = filteredCards[currentCard];
+            if (!card) return;
+
+            document.getElementById('categoryTag').textContent = card.category;
+            document.getElementById('frenchText').textContent = card.french;
+            document.getElementById('languageIndicator').innerHTML = `🇫🇷 Français → ${languages[nativeLanguage].flag} ${languages[nativeLanguage].name}`;
+
+            const translationElement = document.getElementById('translationText');
+            translationElement.textContent = card.translations[nativeLanguage];
+            translationElement.className = `text-2xl md:text-3xl font-bold mb-3 px-4 break-words ${nativeLanguage === 'arabic' ? 'arabic-text' : ''
+                } ${['hindi', 'urdu'].includes(nativeLanguage) ? nativeLanguage + '-text' : ''}`;
+
+            document.getElementById('translationFlag').innerHTML = `${languages[nativeLanguage].flag} Translation`;
+            document.getElementById('culturalContext').textContent = card.culturalContext[nativeLanguage];
+
+            const iconsContainer = document.getElementById('culturalIcons');
+            iconsContainer.innerHTML = '';
+            if (card.culturalIcons && card.culturalIcons[nativeLanguage]) {
+                card.culturalIcons[nativeLanguage].forEach((icon, index) => {
+                    const iconSpan = document.createElement('span');
+                    iconSpan.className = 'cultural-icon text-2xl';
+                    iconSpan.textContent = icon;
+                    iconSpan.style.animationDelay = `${index * 0.3}s`;
+                    iconsContainer.appendChild(iconSpan);
+                });
+            }
+
+            updateKnowButton();
+        }
+
+        function updateKnowButton() {
+            const card = filteredCards[currentCard];
+            const knowButton = document.getElementById('knowButton');
+
+            if (knownCards.has(card.id)) {
+                knowButton.textContent = '✓ Mastered!';
+                knowButton.className = 'px-8 py-4 rounded-xl font-bold text-lg bg-green-200 text-green-800 cursor-not-allowed shadow-md';
+                knowButton.onclick = null;
+            } else {
+                knowButton.textContent = 'I Know This!';
+                knowButton.className = 'px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-xl';
+                knowButton.onclick = markAsKnown;
+            }
+        }
+
+        function updateProgress() {
+            const totalCards = flashcards.length;
+            const progressPercentage = (score / totalCards) * 100;
+
+            document.getElementById('scoreDisplay').textContent = `Score: ${score}/${totalCards}`;
+            document.getElementById('cardCounter').textContent = `Card ${currentCard + 1} of ${filteredCards.length}`;
+            document.getElementById('categoryDisplay').textContent = `in ${selectedCategory}`;
+            document.getElementById('progressBar').style.width = `${progressPercentage}%`;
+        }
+
+        function flipCard() {
+            const flashcard = document.getElementById('flashcard');
+            const knowButton = document.getElementById('knowButton');
+
             isFlipped = !isFlipped;
-            flashcard.classList.toggle('flipped');
+            if (isFlipped) {
+                flashcard.classList.add('flipped');
+                knowButton.style.display = 'block';
+            } else {
+                flashcard.classList.remove('flipped');
+                knowButton.style.display = 'none';
+            }
+        }
+
+        function resetFlip() {
+            const flashcard = document.getElementById('flashcard');
+            const knowButton = document.getElementById('knowButton');
+
+            isFlipped = false;
+            flashcard.classList.remove('flipped');
+            knowButton.style.display = 'none';
         }
 
         function nextCard() {
-            if (currentCardIndex < flashcardsData.length - 1) {
-                currentCardIndex++;
-                updateCard();
-                
-                // Celebration on last card
-                if (currentCardIndex === flashcardsData.length - 1) {
-                    celebrate();
+            currentCard = (currentCard + 1) % filteredCards.length;
+            updateCard();
+            updateProgress();
+            resetFlip();
+        }
+
+        function prevCard() {
+            currentCard = (currentCard - 1 + filteredCards.length) % filteredCards.length;
+            updateCard();
+            updateProgress();
+            resetFlip();
+        }
+
+        function markAsKnown() {
+            const cardId = filteredCards[currentCard].id;
+            if (!knownCards.has(cardId)) {
+                knownCards.add(cardId);
+                score++;
+                updateProgress();
+                updateKnowButton();
+
+                const flashcard = document.getElementById('flashcard');
+                flashcard.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    flashcard.style.transform = 'scale(1)';
+                }, 300);
+
+                if (score === flashcards.length) {
+                    setTimeout(() => {
+                        alert('🎉 Félicitations! You have mastered all 32 cards! 🎉');
+                    }, 500);
                 }
             }
         }
 
-        function previousCard() {
-            if (currentCardIndex > 0) {
-                currentCardIndex--;
-                updateCard();
-            }
+        function resetProgress() {
+            score = 0;
+            knownCards.clear();
+            currentCard = 0;
+            updateCard();
+            updateProgress();
+            resetFlip();
         }
 
-        function playSound(lang, event) {
-            // Prevent the click event from bubbling up to the card flip
-            if (event) {
-                event.stopPropagation();
-            }
-            
-            const card = flashcardsData[currentCardIndex];
-            let textToSpeak;
-            let voiceLang;
-            
-            if (lang === 'front') {
-                const currentLang = getCurrentLanguage();
-                textToSpeak = card[currentLang].word;
-                voiceLang = currentLang === 'en' ? 'en-US' : currentLang === 'fr' ? 'fr-FR' : 'ar-SA';
-            } else {
-                textToSpeak = card[lang].word;
-                voiceLang = lang === 'en' ? 'en-US' : lang === 'fr' ? 'fr-FR' : 'ar-SA';
-            }
-            
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(textToSpeak);
-                utterance.lang = voiceLang;
-                utterance.rate = 0.8;
-                utterance.pitch = 1.1;
-                speechSynthesis.speak(utterance);
-            } else {
-                alert('Sorry, your browser does not support text-to-speech.');
-            }
-        }
-
-        function celebrate() {
-            const celebration = document.getElementById('celebration');
-            const colors = ['#ff6b6b', '#4ecdc4', '#feca57', '#667eea', '#764ba2'];
-            
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = '10px';
-                    confetti.style.height = '10px';
-                    confetti.style.borderRadius = '50%';
-                    celebration.appendChild(confetti);
-                    
-                    setTimeout(() => confetti.remove(), 3000);
-                }, i * 100);
-            }
-        }
-
-        // Event listeners
-        flashcard.addEventListener('click', (event) => {
-            // Only flip if the click is not on a button
-            if (!event.target.classList.contains('sound-btn')) {
-                toggleFlip();
-            }
-        });
-        
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            switch(e.key) {
+        document.addEventListener('keydown', function (event) {
+            switch (event.key) {
                 case 'ArrowLeft':
-                    previousCard();
+                    prevCard();
                     break;
                 case 'ArrowRight':
                     nextCard();
                     break;
                 case ' ':
-                    e.preventDefault();
-                    toggleFlip();
+                    event.preventDefault();
+                    flipCard();
+                    break;
+                case 'Enter':
+                    if (isFlipped && !knownCards.has(filteredCards[currentCard].id)) {
+                        markAsKnown();
+                    }
+                    break;
+                case 's':
+                case 'S':
+                    event.preventDefault();
+                    playSound(event);
                     break;
             }
         });
 
-        // Initialize
-        updateCard();
-
-        // Touch gestures for mobile
-        let startX = 0;
-        let startY = 0;
-        
-        flashcard.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-        });
-
-        flashcard.addEventListener('touchend', (e) => {
-            // Don't handle swipe if touching a button
-            if (e.target.classList.contains('sound-btn')) {
-                return;
-            }
-            
-            const endX = e.changedTouches[0].clientX;
-            const endY = e.changedTouches[0].clientY;
-            const diffX = startX - endX;
-            const diffY = startY - endY;
-            
-            // Only handle horizontal swipes (ignore vertical scrolling)
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-                if (diffX > 0 && currentCardIndex < flashcardsData.length - 1) {
-                    nextCard();
-                } else if (diffX < 0 && currentCardIndex > 0) {
-                    previousCard();
-                }
-            }
-        });
+        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
+
 </html>
